@@ -37,30 +37,41 @@ public class SecurityConfig {
 
         // prevede la approvazione o negazione di un servizio endpoint
         httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/auth/**").permitAll());
-//        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.GET,"/studenti/**").permitAll());
 
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/studenti/**").permitAll()); //
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.POST).permitAll());
+        httpSecurity.authorizeHttpRequests(auth -> auth
 
-        httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
+                // organizzatori
+                .requestMatchers(HttpMethod.POST, "/eventi/**").hasRole("ORGANIZZATORE")
+                .requestMatchers(HttpMethod.PUT, "/eventi/**").hasRole("ORGANIZZATORE")
+                .requestMatchers(HttpMethod.PATCH, "/eventi/**").hasRole("ORGANIZZATORE")
+                .requestMatchers(HttpMethod.DELETE, "/eventi/**").hasRole("ORGANIZZATORE")
 
-        //httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // utenti
+                .requestMatchers(HttpMethod.POST, "/prenotazioni/**").hasRole("UTENTE")
+                .requestMatchers(HttpMethod.DELETE, "/prenotazioni/**").hasRole("UTENTE")
+
+
+                // Tutto il resto deve essere autenticato
+                .anyRequest().authenticated()
+        );
+
+
+       // httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
+
 
         return httpSecurity.build();
     }
 
-    //password encoding. lo richiameremo nel metodo di creazione password
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10); // verrà applicato 10 volte
+        return new BCryptPasswordEncoder(10);
     }
 
     // cors
-    @Bean//permette di abilitare l'accesso al servizio anche da parte di server diversi da quello su cui risiede
-    //il servizio. In questo caso ho abilitato tutti i server ad accedere a tutti i servizi
+    @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*")); // all "*" permette a qualsiasi origine di accedere al servizio, quando si parla di server pubblico. i router di casa bloccano in automatico le richieste http
+        corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

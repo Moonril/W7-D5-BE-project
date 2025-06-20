@@ -14,7 +14,6 @@ import java.util.Date;
 
 @Component
 public class JwtTool {
-    //classe gestita direttamente da Spring per la gestione del token
     @Value("${jwt.duration}")
     private long durata;
 
@@ -25,9 +24,6 @@ public class JwtTool {
     private UserService userService;
 
     public String createToken(User user){
-        //per generare il token avremo bisogno della data di generazione del token, della durata e dell'id
-        //dell'utente per il quale stiamo creando il token. Avremo inoltre bisogno anche della chiave segreta
-        //per poter crittografare il token
 
         return Jwts.builder().issuedAt(new Date()).
                 expiration(new Date(System.currentTimeMillis()+durata)).
@@ -37,14 +33,12 @@ public class JwtTool {
     }
 
 
-    //metodo per la verifica della validità del token
     public void validateToken(String token){
         Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).
                 build().parse(token);
     }
 
     public User getUserFromToken(String token) throws NotFoundException {
-        //recuperare l'id dell'utente dal token
         int id = Integer.parseInt(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).
                 build().parseSignedClaims(token).getPayload().getSubject());
 
