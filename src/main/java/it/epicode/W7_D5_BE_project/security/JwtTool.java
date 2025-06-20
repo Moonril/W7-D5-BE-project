@@ -7,44 +7,47 @@ import it.epicode.W7_D5_BE_project.model.User;
 import it.epicode.W7_D5_BE_project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
 public class JwtTool {
+    //classe gestita direttamente da Spring per la gestione del token
     @Value("${jwt.duration}")
     private long durata;
 
     @Value("${jwt.secret}")
     private String chiaveSegreta;
 
-    // ci serve il service dell'user per estrarre l'utente in base la token
     @Autowired
     private UserService userService;
 
-    public String createToken(User user) {
-        //claim tutti i componenti del token ???
+    public String createToken(User user){
+        //per generare il token avremo bisogno della data di generazione del token, della durata e dell'id
+        //dell'utente per il quale stiamo creando il token. Avremo inoltre bisogno anche della chiave segreta
+        //per poter crittografare il token
 
-        //creare token e dargli una durata
-        return Jwts.builder().issuedAt(new Date()).expiration(new Date(System.currentTimeMillis()+durata))
-                .subject(user.getId() + "").signWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).compact(); // questo crea il token, nel token c'è la data di creazione e l'id
-
+        return Jwts.builder().issuedAt(new Date()).
+                expiration(new Date(System.currentTimeMillis()+durata)).
+                subject(String.valueOf(user.getId())).
+                signWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).
+                compact();
     }
 
-    //metodo per la validità del token
+
+    //metodo per la verifica della validità del token
     public void validateToken(String token){
-        Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
-                .build().parse(token);
+        Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).
+                build().parse(token);
     }
-
-    // metodo per estrarre l'utente collegato al token, aggiungi service utente sopra
 
     public User getUserFromToken(String token) throws NotFoundException {
-        //recuperare l'id dal token + estrarre l'id dal token. subjetc contiene l'id dell'utente come stringa, quindi cast in integer
-        int id = Integer.parseInt(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).build().parseSignedClaims(token).getPayload().getSubject());
-        // estrai utente con questo id
-        return userService.getUser(id);
+        //recuperare l'id dell'utente dal token
+        int id = Integer.parseInt(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).
+                build().parseSignedClaims(token).getPayload().getSubject());
 
+        return userService.getUser(id);
     }
 }

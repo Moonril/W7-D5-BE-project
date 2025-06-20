@@ -27,10 +27,10 @@ public class User implements UserDetails {
 
 
     @JsonIgnore
-    @OneToMany(mappedBy = "utente")
+    @OneToMany(mappedBy = "user")
     private List<Prenotazione> prenotazione;
     @JsonIgnore
-    @OneToMany(mappedBy = "utente")
+    @OneToMany(mappedBy = "user")
     private List<Evento> eventi;
 
 

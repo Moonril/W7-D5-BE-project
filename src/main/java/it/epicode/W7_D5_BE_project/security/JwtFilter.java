@@ -4,6 +4,7 @@ package it.epicode.W7_D5_BE_project.security;
 import it.epicode.W7_D5_BE_project.exceptions.NotFoundException;
 import it.epicode.W7_D5_BE_project.exceptions.UnauthorizedException;
 import it.epicode.W7_D5_BE_project.model.User;
+import it.epicode.W7_D5_BE_project.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,44 +26,48 @@ public class JwtFilter  extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //questo metodo dovrà verificare se la richiesta ha il token
-        //se non ha il token -> eccezione
-        //se ha il token -> viene verficato che il token sia valido,se non è valido -> eccezione
-        //se se è valido, accedere la richiesta ai filtri successivi
+        /*
+        1. verificare se la richiesta ha il token
+        2. se non ha il token, eccezione
+        3. se ha il token, viene verificato che il token sia valido. Se non è valido, eccezione
+        4. se il token è valido, allora si farà accedere la richiesta ai filtri successivi
+         */
 
         String authorization = request.getHeader("Authorization");
-        if(authorization== null || !authorization.startsWith("Bearer ")){
-            throw new UnauthorizedException("Token non presente");
-        } else {
-            String token = authorization.substring(7); // mi prendo la parte dopo "bearer "
+
+        if(authorization==null || !authorization.startsWith("Bearer ")){
+            throw new UnauthorizedException("Token non presente, non sei autorizzato ad usare il servizio richiesto");
+        }
+        else{
+            //estraggo il token dalla stringa authorization che contiene anche la parola Bearer  prima del token. Per questo prendo solo
+            //la parte della stringa che comincia dal carattere 7
+            String token = authorization.substring(7);
+
+            //verifico che il token sia valido
             jwtTool.validateToken(token);
-
-            try{
-
-                // recuperiamo utente
+            try {
+                //recupero l'utente collegato al token usando il metodo getUserFromToken del jwtTool
                 User user = jwtTool.getUserFromToken(token);
-                //controllare il ruolo
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); // getAuthorities mi rende il ruolo?
 
-                // mantenere nel suo contesto i dati sulla sicurezza di questo utente?
-                //abilitare o meno l'accesso a un serevizio a seconda dell'utente
+                //creo un oggetto authentication inserendogli all'interno l'utente recuperato e il suo ruolo
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                //aggiungo l'autenticazione con l'utente nel contesto di Spring security
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-            } catch (NotFoundException e) {
+            }catch (NotFoundException e){
                 throw new UnauthorizedException("Utente collegato al token non trovato");
             }
 
 
-
-
             filterChain.doFilter(request, response);
         }
+
     }
 
-    //questo serve per non avere il controllo del token su alcuni endpoint (tipo la pagina di login)
+    //questo metodo evita che gli endpoint di registrazione e login possano richiedere il token
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());
     }
+
 }
+

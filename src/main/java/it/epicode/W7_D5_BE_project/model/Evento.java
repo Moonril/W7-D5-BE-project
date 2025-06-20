@@ -21,7 +21,7 @@ public class Evento {
 
 
     @ManyToOne
-    @JoinColumn(name = "utente_id")
+    @JoinColumn(name = "user_id")
     private User user;
     @JsonIgnore
     @OneToMany(mappedBy = "evento")

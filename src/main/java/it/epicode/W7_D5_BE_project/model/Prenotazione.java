@@ -19,7 +19,7 @@ public class Prenotazione {
     private StatoPrenotazione stato = StatoPrenotazione.ATTIVA;
 
     @ManyToOne
-    @JoinColumn(name = "utente_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne

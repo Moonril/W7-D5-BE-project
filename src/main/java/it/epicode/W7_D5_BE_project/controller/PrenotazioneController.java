@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping(path = "/prenotazioni")
 public class PrenotazioneController {
     @Autowired
     private PrenotazioneService prenotazioneService;
