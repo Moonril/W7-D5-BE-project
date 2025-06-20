@@ -3,7 +3,9 @@ package it.epicode.W7_D5_BE_project.service;
 import it.epicode.W7_D5_BE_project.dto.EventoDto;
 import it.epicode.W7_D5_BE_project.exceptions.NotFoundException;
 import it.epicode.W7_D5_BE_project.model.Evento;
+import it.epicode.W7_D5_BE_project.model.User;
 import it.epicode.W7_D5_BE_project.repository.EventoRepository;
+import it.epicode.W7_D5_BE_project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +19,14 @@ public class EventoService {
     @Autowired
     private EventoRepository eventoRepository;
 
-    //todo forse devo aggiungere l'organizzatore
+    @Autowired
+    private UserService userService;
 
-    public Evento saveEvento(EventoDto eventoDto){
+
+
+    public Evento saveEvento(EventoDto eventoDto) throws NotFoundException {
+        User organizzatore = userService.getUser(eventoDto.getUserId());
+
         Evento evento = new Evento();
 
         evento.setTitolo(eventoDto.getTitolo());
@@ -27,6 +34,7 @@ public class EventoService {
         evento.setDataEvento(eventoDto.getDataEvento());
         evento.setLuogo(eventoDto.getLuogo());
         evento.setNumeroPosti(eventoDto.getNumeroPosti());
+        evento.setUser(organizzatore);
 
         return eventoRepository.save(evento);
     }
@@ -48,6 +56,8 @@ public class EventoService {
         eventoDaAggiornare.setDataEvento(eventoDto.getDataEvento());
         eventoDaAggiornare.setLuogo(eventoDto.getLuogo());
         eventoDaAggiornare.setNumeroPosti(eventoDto.getNumeroPosti());
+
+        // todo if?
 
         return eventoRepository.save(eventoDaAggiornare);
     }

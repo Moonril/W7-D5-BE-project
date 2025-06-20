@@ -13,22 +13,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/utenti")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUser(){
 
         return userService.getAllUser();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public User getUser(@PathVariable int id) throws NotFoundException {
         return userService.getUser(id);
     }
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public User updateUser(@PathVariable int id, @RequestBody @Validated UserDto userDto, BindingResult bindingResult) throws NotFoundException, ValidationException {
         if (bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().
@@ -39,7 +39,7 @@ public class UserController {
         return userService.updateUser(id, userDto);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) throws NotFoundException {
         userService.deleteUser(id);
     }

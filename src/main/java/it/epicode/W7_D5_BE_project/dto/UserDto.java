@@ -14,7 +14,6 @@ public class UserDto {
     @NotEmpty(message = "inserisci una password")
     private String password;
 
-    private int prenotationeId;
-    private int eventoId;
+
 
 }

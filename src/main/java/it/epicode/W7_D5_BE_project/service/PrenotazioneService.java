@@ -26,8 +26,8 @@ public class PrenotazioneService {
     private UserService userService;
 
     public Prenotazione savePrenotazione(PrenotazioneDto prenotazioneDto) throws NotFoundException {
-        Evento evento = eventoService.getEvento(prenotazioneDto.getEventoId()); //todo
-        User user = userService.getUser(prenotazioneDto.getUserId()); //todo prenotazioneDTO o userDTO????
+        Evento evento = eventoService.getEvento(prenotazioneDto.getEventoId());
+        User user = userService.getUser(prenotazioneDto.getUserId());
 
 //        boolean giaPrenotato = prenotazioneRepository
 //                .existsByDipendenteIdAndViaggio_DataViaggio(dipendente.getId(), viaggio.getDataViaggio());
@@ -72,17 +72,4 @@ public class PrenotazioneService {
         prenotazioneRepository.delete(prenotazioneToDelete);
     }
 
-    //patch per cambiare stato
-    //todo
-
-//    public Viaggio patchViaggio(int id, String nuovoStato) throws NotFoundException {
-//        Viaggio viaggioDaPatchare = getViaggio(id);
-//
-//        StatoViaggio statoEnum;
-//        statoEnum = StatoViaggio.valueOf(nuovoStato.toUpperCase());
-//        viaggioDaPatchare.setStatoViaggio(statoEnum); //???
-//
-//        return viaggioRepository.save(viaggioDaPatchare);
-//
-//    }
 }

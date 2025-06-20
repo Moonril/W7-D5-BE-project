@@ -19,4 +19,6 @@ public class EventoDto {
     @NotNull(message = "Inserisci il numero di posti disponibili")
     private int numeroPosti;
 
+    private int userId;
+
 }

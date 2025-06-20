@@ -26,7 +26,8 @@ public class UserService {
         user.setCognome(userDto.getCognome());
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole(Role.UTENTE); //todo
+        user.setRole(Role.UTENTE);
+        // assegno un ruolo utente in automatico, l'amministratore si potrà assegnare solo dal database
 
         return userRepository.save(user);
     }

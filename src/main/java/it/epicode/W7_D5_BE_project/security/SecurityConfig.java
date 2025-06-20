@@ -37,26 +37,31 @@ public class SecurityConfig {
 
         // prevede la approvazione o negazione di un servizio endpoint
         httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/auth/**").permitAll());
+        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/utenti/**").permitAll());
+        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/prenotazioni/**").permitAll());
+        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/eventi/**").permitAll());
 
-        httpSecurity.authorizeHttpRequests(auth -> auth
+//        httpSecurity.authorizeHttpRequests(auth -> auth
+//
+//                // organizzatori
+//                .requestMatchers(HttpMethod.GET, "/eventi/**").hasRole("UTENTE")
+//                .requestMatchers(HttpMethod.POST, "/eventi/**").hasRole("ORGANIZZATORE")
+//                .requestMatchers(HttpMethod.PUT, "/eventi/**").hasRole("ORGANIZZATORE")
+//                .requestMatchers(HttpMethod.PATCH, "/eventi/**").hasRole("ORGANIZZATORE")
+//                .requestMatchers(HttpMethod.DELETE, "/eventi/**").hasRole("ORGANIZZATORE")
+//
+//                // utenti
+//                .requestMatchers(HttpMethod.GET, "/prenotazioni/**").hasRole("UTENTE")
+//                .requestMatchers(HttpMethod.POST, "/prenotazioni/**").hasRole("UTENTE")
+//                .requestMatchers(HttpMethod.DELETE, "/prenotazioni/**").hasRole("UTENTE")
+//
+//
+//                // Tutto il resto deve essere autenticato
+//                .anyRequest().authenticated()
+//        );
 
-                // organizzatori
-                .requestMatchers(HttpMethod.POST, "/eventi/**").hasRole("ORGANIZZATORE")
-                .requestMatchers(HttpMethod.PUT, "/eventi/**").hasRole("ORGANIZZATORE")
-                .requestMatchers(HttpMethod.PATCH, "/eventi/**").hasRole("ORGANIZZATORE")
-                .requestMatchers(HttpMethod.DELETE, "/eventi/**").hasRole("ORGANIZZATORE")
 
-                // utenti
-                .requestMatchers(HttpMethod.POST, "/prenotazioni/**").hasRole("UTENTE")
-                .requestMatchers(HttpMethod.DELETE, "/prenotazioni/**").hasRole("UTENTE")
-
-
-                // Tutto il resto deve essere autenticato
-                .anyRequest().authenticated()
-        );
-
-
-       // httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
+        httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
 
 
         return httpSecurity.build();
