@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+
 @RestController
 @RequestMapping(path = "/eventi")
 public class EventoController {
@@ -22,7 +24,7 @@ public class EventoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Evento saveEvento (@RequestBody @Validated EventoDto eventoDto, BindingResult bindingResult) throws NotFoundException, ValidationException {
+    public Evento saveEvento (@RequestBody @Validated EventoDto eventoDto, BindingResult bindingResult) throws NotFoundException, ValidationException, AccessDeniedException {
         if(bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).reduce("",(e, s)->e+s));
         }
@@ -42,7 +44,7 @@ public class EventoController {
     }
 
     @PutMapping("/{id}")
-    public Evento updateViaggio(@PathVariable int id, @RequestBody @Validated EventoDto eventoDto, BindingResult bindingResult) throws NotFoundException, ValidationException {
+    public Evento updateViaggio(@PathVariable int id, @RequestBody @Validated EventoDto eventoDto, BindingResult bindingResult) throws NotFoundException, ValidationException, AccessDeniedException {
         if(bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).reduce("",(e, s)->e+s));
         }

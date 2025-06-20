@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+
 @RestController
 @RequestMapping(path = "/prenotazioni")
 public class PrenotazioneController {
@@ -20,7 +22,7 @@ public class PrenotazioneController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Prenotazione savePrenotazione (@RequestBody @Validated PrenotazioneDto prenotazioneDto, BindingResult bindingResult) throws NotFoundException, ValidationException {
+    public Prenotazione savePrenotazione (@RequestBody @Validated PrenotazioneDto prenotazioneDto, BindingResult bindingResult) throws NotFoundException, ValidationException, AccessDeniedException {
         if(bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).reduce("",(e, s)->e+s));
         }
@@ -40,7 +42,7 @@ public class PrenotazioneController {
     }
 
     @PutMapping("/{id}")
-    public Prenotazione updatePrenotazione(@PathVariable int id, @RequestBody @Validated PrenotazioneDto prenotazioneDto, BindingResult bindingResult) throws NotFoundException, ValidationException {
+    public Prenotazione updatePrenotazione(@PathVariable int id, @RequestBody @Validated PrenotazioneDto prenotazioneDto, BindingResult bindingResult) throws NotFoundException, ValidationException, AccessDeniedException {
         if(bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).reduce("",(e, s)->e+s));
         }

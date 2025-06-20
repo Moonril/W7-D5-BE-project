@@ -2,6 +2,7 @@ package it.epicode.W7_D5_BE_project.service;
 
 import it.epicode.W7_D5_BE_project.dto.EventoDto;
 import it.epicode.W7_D5_BE_project.dto.PrenotazioneDto;
+import it.epicode.W7_D5_BE_project.enums.Role;
 import it.epicode.W7_D5_BE_project.exceptions.NotFoundException;
 import it.epicode.W7_D5_BE_project.model.Evento;
 import it.epicode.W7_D5_BE_project.model.Prenotazione;
@@ -12,7 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.AccessDeniedException;
 
 @Service
 public class PrenotazioneService {
@@ -25,22 +29,22 @@ public class PrenotazioneService {
     @Autowired
     private UserService userService;
 
-    public Prenotazione savePrenotazione(PrenotazioneDto prenotazioneDto) throws NotFoundException {
+    public Prenotazione savePrenotazione(PrenotazioneDto prenotazioneDto) throws NotFoundException, AccessDeniedException {
         Evento evento = eventoService.getEvento(prenotazioneDto.getEventoId());
-        User user = userService.getUser(prenotazioneDto.getUserId());
 
-//        boolean giaPrenotato = prenotazioneRepository
-//                .existsByDipendenteIdAndViaggio_DataViaggio(dipendente.getId(), viaggio.getDataViaggio());
-//
-//        if (giaPrenotato) {
-//            throw new PrenotazioneGiaEsistenteException("Il dipendente ha già una prenotazione per quel giorno.");
-//        }
+        User utenteAutenticato = (User) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+
+        if (utenteAutenticato.getRole() != Role.UTENTE) {
+            throw new AccessDeniedException("Solo gli utenti possono effettuare prenotazioni");
+        }
 
         Prenotazione prenotazione = new Prenotazione();
 
         prenotazione.setPostiPrenotati(prenotazioneDto.getPostiPrenotati());
         prenotazione.setEvento(evento);
-        prenotazione.setUser(user);
+
+        prenotazione.setUser(utenteAutenticato);
 
         return prenotazioneRepository.save(prenotazione);
     }
@@ -54,16 +58,30 @@ public class PrenotazioneService {
         return prenotazioneRepository.findAll(pageable);
     }
 
-    public Prenotazione updatePrenotazione(int id, PrenotazioneDto prenotazioneDto) throws NotFoundException{
+    public Prenotazione updatePrenotazione(int id, PrenotazioneDto prenotazioneDto) throws NotFoundException, AccessDeniedException {
         Prenotazione prenotazioneDaAggiornare = getPrenotazione(id);
+
+        User utenteAutenticato = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
+        if (prenotazioneDaAggiornare.getUser().getId() != utenteAutenticato.getId()) {
+            throw new AccessDeniedException("Non sei autorizzato a modificare questa prenotazione.");
+        }
+
+
+        if (utenteAutenticato.getRole() != Role.UTENTE) {
+            throw new AccessDeniedException("Solo gli utenti possono modificare prenotazioni.");
+        }
+
 
         prenotazioneDaAggiornare.setPostiPrenotati(prenotazioneDto.getPostiPrenotati());
 
 
-        if(prenotazioneDaAggiornare.getEvento().getId()!=prenotazioneDto.getEventoId()){
-            Evento evento = eventoService.getEvento(prenotazioneDto.getEventoId());
-            prenotazioneDaAggiornare.setEvento(evento);
+        if (prenotazioneDaAggiornare.getEvento().getId() != prenotazioneDto.getEventoId()) {
+            Evento nuovoEvento = eventoService.getEvento(prenotazioneDto.getEventoId());
+            prenotazioneDaAggiornare.setEvento(nuovoEvento);
         }
+
         return prenotazioneRepository.save(prenotazioneDaAggiornare);
     }
 
