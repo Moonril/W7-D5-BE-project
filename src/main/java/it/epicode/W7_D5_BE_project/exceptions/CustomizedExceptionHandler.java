@@ -1,7 +1,8 @@
 package it.epicode.W7_D5_BE_project.exceptions;
 
 
-import it.epicode.W7_D2_BE.model.ApiError;
+
+import it.epicode.W7_D5_BE_project.model.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

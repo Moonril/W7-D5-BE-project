@@ -13,7 +13,7 @@ public class EventoDto {
     @NotEmpty(message = "inserisci una descrizione")
     private String descrizione;
     @NotNull(message = "Inserisci una data corretta")
-    private LocalDate data;
+    private LocalDate dataEvento;
     @NotEmpty(message = "inserisci un luogo per l'evento")
     private String luogo;
     @NotNull(message = "Inserisci il numero di posti disponibili")

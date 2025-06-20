@@ -11,6 +11,6 @@ public class PrenotazioneDto {
     private int postiPrenotati;
 
     private int eventoId;
-    private int utenteId;
+    private int userId;
 
 }

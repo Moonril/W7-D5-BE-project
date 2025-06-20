@@ -2,6 +2,9 @@ package it.epicode.W7_D5_BE_project.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import it.epicode.W7_D5_BE_project.exceptions.NotFoundException;
+import it.epicode.W7_D5_BE_project.model.User;
+import it.epicode.W7_D5_BE_project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
