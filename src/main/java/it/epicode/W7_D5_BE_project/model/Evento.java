@@ -15,7 +15,7 @@ public class Evento {
     private int id;
     private String titolo;
     private String descrizione;
-    private LocalDate data;
+    private LocalDate dataEvento;
     private String luogo;
     private int numeroPosti;
 

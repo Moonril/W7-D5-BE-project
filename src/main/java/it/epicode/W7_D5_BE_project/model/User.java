@@ -19,6 +19,7 @@ public class User implements UserDetails {
     @GeneratedValue
     private int id;
     private String nome;
+    private String cognome;
     private String username;
     private String password;
     @Enumerated(EnumType.STRING)
