@@ -35,7 +35,7 @@ public class EventoService {
         return eventoRepository.findById(id).orElseThrow(() -> new NotFoundException("Viaggio con id: " + id + " non trovato"));
     }
 
-    public Page<Evento> getAllEvento(int page, int size, String sortBy){
+    public Page<Evento> getAllEventi(int page, int size, String sortBy){
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return eventoRepository.findAll(pageable);
     }
