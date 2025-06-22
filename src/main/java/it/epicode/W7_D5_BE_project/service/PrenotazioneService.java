@@ -4,9 +4,11 @@ import it.epicode.W7_D5_BE_project.dto.EventoDto;
 import it.epicode.W7_D5_BE_project.dto.PrenotazioneDto;
 import it.epicode.W7_D5_BE_project.enums.Role;
 import it.epicode.W7_D5_BE_project.exceptions.NotFoundException;
+import it.epicode.W7_D5_BE_project.exceptions.PostiEsauritiException;
 import it.epicode.W7_D5_BE_project.model.Evento;
 import it.epicode.W7_D5_BE_project.model.Prenotazione;
 import it.epicode.W7_D5_BE_project.model.User;
+import it.epicode.W7_D5_BE_project.repository.EventoRepository;
 import it.epicode.W7_D5_BE_project.repository.PrenotazioneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,9 @@ public class PrenotazioneService {
     private PrenotazioneRepository prenotazioneRepository;
 
     @Autowired
+    private EventoRepository eventoRepository;
+
+    @Autowired
     private EventoService eventoService;
 
     @Autowired
@@ -39,12 +44,23 @@ public class PrenotazioneService {
             throw new AccessDeniedException("Solo gli utenti possono effettuare prenotazioni");
         }
 
+        int postiRichiesti = prenotazioneDto.getPostiPrenotati();
+        int postiPrenotati = prenotazioneRepository.countPostiPrenotatiByEvento(evento.getId());
+        int postiDisponibili = evento.getNumeroPosti() - postiPrenotati;
+
+        if (postiDisponibili < postiRichiesti) {
+            throw new PostiEsauritiException("Posti esauriti o insufficienti per questo evento");
+        }
+
+        evento.setNumeroPosti(postiDisponibili - postiRichiesti);
+        eventoRepository.save(evento);
         Prenotazione prenotazione = new Prenotazione();
 
         prenotazione.setPostiPrenotati(prenotazioneDto.getPostiPrenotati());
         prenotazione.setEvento(evento);
 
         prenotazione.setUser(utenteAutenticato);
+
 
         return prenotazioneRepository.save(prenotazione);
     }
